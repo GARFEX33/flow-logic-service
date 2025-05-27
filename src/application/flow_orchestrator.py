@@ -13,14 +13,18 @@ async def orchestrate_flow(event: Dict[str, Any]) -> None:
     flujo_id = event.get("id")
     flujo_data = event.get("data")
 
+    logger.info(f"Starting orchestration for event: {flujo_id}")
+
     # Create FlujoEjecutado record with initial state
     flujo = FlujoEjecutado(id=flujo_id, data=flujo_data, status="recibido")
-    flujo_id = db.save_flujo_ejecutado(flujo.model_dump())
+    saved_id = db.save_flujo_ejecutado(flujo.model_dump())
+    logger.info(f"Saved flujo with ID: {saved_id}")
 
     try:
         # Update state to en_proceso
         flujo.status = "en_proceso"
         await db.update_flujo_ejecutado(flujo.model_dump())
+        logger.info(f"Updated flujo status to en_proceso")
 
         # Execute event handler (simulated here)
         await asyncio.sleep(1)  # Simulate handler execution
@@ -28,6 +32,7 @@ async def orchestrate_flow(event: Dict[str, Any]) -> None:
 
         # Update state to procesado
         flujo.status = "procesado"
+        logger.info(f"Updating flujo status to procesado")
     except Exception as e:
         # Handle exceptions and update state to fallido
         flujo.status = "fallido"
@@ -35,4 +40,6 @@ async def orchestrate_flow(event: Dict[str, Any]) -> None:
         logger.error(f"Error processing event {flujo_id}: {e}")
     finally:
         # Persist final state
+        logger.info(f"Final update for flujo {flujo_id} with status {flujo.status}")
         await db.update_flujo_ejecutado(flujo.model_dump())
+        logger.info(f"Final state persisted for flujo {flujo_id}")
