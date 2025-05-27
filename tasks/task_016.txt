@@ -1,0 +1,11 @@
+# Task ID: 16
+# Title: Dockerization
+# Status: done
+# Dependencies: 1, 15
+# Priority: medium
+# Description: Create a Dockerfile to containerize the flow-logic-service application, including dependencies and build artifacts. Configure it to run the service entry point.
+# Details:
+Create a Dockerfile in the project root. Use a suitable base image (e.g., Node.js). Copy package.json and install dependencies. Copy source code, build the application (TypeScript compilation). Define the entry point command (`node dist/main.js` or similar). Expose the port used by the health check endpoint (Task 15). Consider multi-stage builds for smaller image size. Use Context7 MCP annotations for the Dockerfile definition.
+
+# Test Strategy:
+Build the Docker image (`docker build .`). Run the container (`docker run`). Verify that the service starts without errors and that the health check endpoint (Task 15) is accessible from outside the container.

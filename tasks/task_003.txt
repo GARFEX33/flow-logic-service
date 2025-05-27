@@ -1,0 +1,31 @@
+# Task ID: 3
+# Title: Structured Logging Setup
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Set up structured logging for the service using Pino, configured based on the LOG_LEVEL environment variable. Ensure logs include relevant context like service name and environment.
+# Details:
+Install pino and pino-pretty (for development). Configure the logger instance in the config module or a dedicated logging module (e.g., src/config/logger.ts). Set the log level dynamically based on the loaded configuration. Ensure logs are structured (JSON output by default for Pino). Add Context7 MCP annotations for logging initialization.
+
+# Test Strategy:
+Write unit tests to verify logger initialization and that log output format and level are correct based on configuration. Manually test log output during development.
+
+# Subtasks:
+## 1. Install and Configure Pino Logger [done]
+### Dependencies: None
+### Description: Install Pino and Pino-Pretty packages, and configure the logger instance in a dedicated module to handle different log levels based on the environment.
+### Details:
+Install Pino and Pino-Pretty using npm. Configure the logger instance in a dedicated module (e.g., src/config/logger.ts) to handle different log levels based on the environment. In development, use Pino-Pretty for human-readable logs, and in production, use JSON format for structured logging. ([betterstack.com](https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications/?utm_source=openai))
+
+## 2. Implement Dynamic Log Level Configuration [done]
+### Dependencies: 3.1
+### Description: Set the log level dynamically based on the loaded configuration to control the verbosity of logs in different environments.
+### Details:
+Implement logic to set the log level dynamically based on the loaded configuration, allowing control over the verbosity of logs in different environments. This ensures that only relevant logs are captured, improving performance and readability. ([betterstack.com](https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications/?utm_source=openai))
+
+## 3. Add Contextual Information to Logs [done]
+### Dependencies: 3.1
+### Description: Enhance logs by including relevant context such as service name and environment to provide more meaningful log entries.
+### Details:
+Enhance logs by including relevant context such as service name and environment to provide more meaningful log entries. This can be achieved by adding custom bindings or using child loggers to attach contextual information to each log entry. ([betterstack.com](https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications/?utm_source=openai))
+

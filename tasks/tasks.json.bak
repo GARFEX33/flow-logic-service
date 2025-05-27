@@ -1,0 +1,651 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Project Setup and Base Architecture",
+      "description": "Initialize the Node.js/TypeScript project, set up the basic directory structure following Clean Architecture principles (application, domain, infrastructure, interfaces, config), and configure the build process (tsconfig.json, package.json scripts).",
+      "details": "Use npm or yarn to initialize the project. Install TypeScript and necessary dev dependencies. Create the src/ directory with subdirectories: application, domain, infrastructure, interfaces, config. Configure tsconfig.json for compilation. Set up basic scripts in package.json for build and start. Ensure the structure supports dependency injection (tsyringe will be used later). Add a basic .gitignore.",
+      "testStrategy": "Verify project structure and build process are correctly configured by running build scripts. Check that TypeScript compiles without errors.",
+      "priority": "high",
+      "dependencies": [],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Initialize Node.js/TypeScript Project",
+          "description": "Set up a new Node.js project with TypeScript support using npm or yarn, and install necessary development dependencies.",
+          "dependencies": [],
+          "details": "Use npm or yarn to initialize the project. Install TypeScript and necessary development dependencies. ([hamzamaleek.medium.com](https://hamzamaleek.medium.com/a-step-by-step-guide-to-setting-up-a-node-js-project-with-typescript-fe342ae32555?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "N/A"
+        },
+        {
+          "id": 2,
+          "title": "Configure TypeScript Compiler",
+          "description": "Create and configure the tsconfig.json file to define compiler options and project settings for TypeScript.",
+          "dependencies": [
+            1
+          ],
+          "details": "Generate a tsconfig.json file with appropriate compiler options, including module system, target version, and source directory. ([hamzamaleek.medium.com](https://hamzamaleek.medium.com/a-step-by-step-guide-to-setting-up-a-node-js-project-with-typescript-fe342ae32555?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "N/A"
+        },
+        {
+          "id": 3,
+          "title": "Set Up Project Directory Structure",
+          "description": "Create the src/ directory with subdirectories: application, domain, infrastructure, interfaces, and config, following Clean Architecture principles.",
+          "dependencies": [
+            2
+          ],
+          "details": "Organize the project into layers such as domain, application, infrastructure, interfaces, and config to adhere to Clean Architecture principles. ([forsenior.dev](https://forsenior.dev/blog/nodejs/patterns/clean-architecture?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "N/A"
+        },
+        {
+          "id": 4,
+          "title": "Configure Build and Start Scripts",
+          "description": "Set up build and start scripts in package.json to compile TypeScript code and start the application.",
+          "dependencies": [
+            2
+          ],
+          "details": "Add scripts in package.json for building and starting the application, utilizing tools like ts-node-dev for development. ([bishalraj.info](https://bishalraj.info/blog/complete-guide-for-ts-project/?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "N/A"
+        },
+        {
+          "id": 5,
+          "title": "Set Up .gitignore File",
+          "description": "Create a .gitignore file to exclude unnecessary files and directories from version control.",
+          "dependencies": [
+            1
+          ],
+          "details": "Include entries in .gitignore to exclude node_modules, dist, and other unnecessary files from version control. ([yasirhamm.medium.com](https://yasirhamm.medium.com/how-to-set-up-a-production-ready-project-with-node-and-typescript-19db65c55a4e?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "N/A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Configuration Loading Implementation",
+      "description": "Implement the logic to load environment variables required for the service operation, including BROKER_URL, ENV, SERVICE_NAME, LOG_LEVEL, and the optional AUDIT_DB_URL. Use a library like dotenv.",
+      "details": "Install dotenv. Create a config module (e.g., src/config/index.ts) that loads variables from a .env file or the environment. Define an interface for the configuration object. Handle potential missing required variables (e.g., throw errors). Use Context7 MCP annotations for configuration loading points.",
+      "testStrategy": "Write unit tests to verify that configuration variables are loaded correctly from environment and/or .env file. Test cases for missing required variables.",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set Up Environment Variables",
+          "description": "Create a .env file in the project's root directory to define the required environment variables: BROKER_URL, ENV, SERVICE_NAME, LOG_LEVEL, and optionally AUDIT_DB_URL.",
+          "dependencies": [],
+          "details": "In the .env file, include lines like:\n\nBROKER_URL=your_broker_url\nENV=your_environment\nSERVICE_NAME=your_service_name\nLOG_LEVEL=your_log_level\nAUDIT_DB_URL=your_optional_audit_db_url",
+          "status": "done",
+          "testStrategy": "Verify that the application can access these variables using process.env.BROKER_URL, process.env.ENV, etc."
+        },
+        {
+          "id": 2,
+          "title": "Implement Configuration Loading",
+          "description": "Utilize Node.js's built-in support for loading .env files to load the environment variables into the application.",
+          "dependencies": [
+            1
+          ],
+          "details": "With Node.js v20.6.0 or later, you can load the .env file by running the application with the --env-file flag:\n\nnode --env-file=.env your_app.js\n\nThis will automatically populate process.env with the variables defined in the .env file.",
+          "status": "done",
+          "testStrategy": "Ensure that the application starts correctly and that process.env contains the expected variables."
+        },
+        {
+          "id": 3,
+          "title": "Handle Missing Required Variables",
+          "description": "Implement logic to check for the presence of required environment variables and throw errors if any are missing.",
+          "dependencies": [
+            2
+          ],
+          "details": "After loading the environment variables, check if each required variable is present in process.env. If any are missing, throw an error with a descriptive message to aid in debugging.",
+          "status": "done",
+          "testStrategy": "Test the application by removing one or more required variables from the .env file and confirm that the application throws the appropriate errors."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Structured Logging Setup",
+      "description": "Set up structured logging for the service using Pino, configured based on the LOG_LEVEL environment variable. Ensure logs include relevant context like service name and environment.",
+      "details": "Install pino and pino-pretty (for development). Configure the logger instance in the config module or a dedicated logging module (e.g., src/config/logger.ts). Set the log level dynamically based on the loaded configuration. Ensure logs are structured (JSON output by default for Pino). Add Context7 MCP annotations for logging initialization.",
+      "testStrategy": "Write unit tests to verify logger initialization and that log output format and level are correct based on configuration. Manually test log output during development.",
+      "priority": "high",
+      "dependencies": [
+        2
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Install and Configure Pino Logger",
+          "description": "Install Pino and Pino-Pretty packages, and configure the logger instance in a dedicated module to handle different log levels based on the environment.",
+          "dependencies": [],
+          "details": "Install Pino and Pino-Pretty using npm. Configure the logger instance in a dedicated module (e.g., src/config/logger.ts) to handle different log levels based on the environment. In development, use Pino-Pretty for human-readable logs, and in production, use JSON format for structured logging. ([betterstack.com](https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications/?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Verify that logs are output in the correct format and level based on the environment settings."
+        },
+        {
+          "id": 2,
+          "title": "Implement Dynamic Log Level Configuration",
+          "description": "Set the log level dynamically based on the loaded configuration to control the verbosity of logs in different environments.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implement logic to set the log level dynamically based on the loaded configuration, allowing control over the verbosity of logs in different environments. This ensures that only relevant logs are captured, improving performance and readability. ([betterstack.com](https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications/?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Test by changing the environment variable and confirming that the log level adjusts accordingly."
+        },
+        {
+          "id": 3,
+          "title": "Add Contextual Information to Logs",
+          "description": "Enhance logs by including relevant context such as service name and environment to provide more meaningful log entries.",
+          "dependencies": [
+            1
+          ],
+          "details": "Enhance logs by including relevant context such as service name and environment to provide more meaningful log entries. This can be achieved by adding custom bindings or using child loggers to attach contextual information to each log entry. ([betterstack.com](https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications/?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Verify that each log entry contains the expected contextual information, such as service name and environment."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Define Domain Models and Interfaces",
+      "description": "Define the core domain models and interfaces for the service, specifically the Event structure (tipo, payload, timestamp, id) and the flujo_ejecutado state model (id, tipo_evento, payload, estado, timestamp, error). Place these definitions in the domain layer.",
+      "details": "Create interfaces or classes for Event and FlujoEjecutado in src/domain/. Ensure the FlujoEjecutado model includes the specified states: recibido, en_proceso, procesado, fallido. Define types for event payload (e.g., `any` initially, or a generic type). Use Context7 MCP annotations for domain model definitions.",
+      "testStrategy": "Write simple unit tests to ensure model definitions are valid TypeScript/JavaScript structures.",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Define Event and FlujoEjecutado Models",
+          "description": "Create TypeScript interfaces for Event and FlujoEjecutado models in the src/domain/ directory, ensuring FlujoEjecutado includes states: recibido, en_proceso, procesado, fallido.",
+          "dependencies": [],
+          "details": "Implement interfaces for Event and FlujoEjecutado models in src/domain/. FlujoEjecutado should include states: recibido, en_proceso, procesado, fallido. Define types for event payload (e.g., `any` initially, or a generic type).",
+          "status": "done",
+          "testStrategy": "Unit tests to verify correct implementation of interfaces and state definitions."
+        },
+        {
+          "id": 2,
+          "title": "Apply Context7 MCP Annotations",
+          "description": "Use Context7 MCP annotations to define domain models in the src/domain/ directory.",
+          "dependencies": [
+            1
+          ],
+          "details": "Apply Context7 MCP annotations to the Event and FlujoEjecutado models in src/domain/ to define domain models as per Context7 MCP standards.",
+          "status": "done",
+          "testStrategy": "Integration tests to ensure proper application of MCP annotations and functionality."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Event Schema Validation with Zod",
+      "description": "Implement schema validation for incoming events using Zod, based on the defined Event domain model. This ensures events conform to the expected structure before processing.",
+      "details": "Install zod. Create Zod schemas corresponding to the Event structure defined in the domain layer. Implement a validation function that takes an event object and returns a validated object or throws a validation error. Place this logic in the domain or application layer. Use Context7 MCP annotations for validation logic.",
+      "testStrategy": "Write unit tests for the validation function, covering valid and invalid event structures, missing fields, and incorrect data types.",
+      "priority": "high",
+      "dependencies": [
+        4
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Install Zod and Set Up Event Schema",
+          "description": "Install the Zod library and define schemas that correspond to the Event domain model to ensure data validation.",
+          "dependencies": [],
+          "details": "Use npm to install Zod: `npm install zod`. Then, create Zod schemas that mirror the Event domain model, specifying the expected structure and types for each field.",
+          "status": "done",
+          "testStrategy": "Verify that the schemas correctly validate sample event data, ensuring that all fields conform to the defined types and constraints."
+        },
+        {
+          "id": 2,
+          "title": "Implement Validation Function",
+          "description": "Develop a function that accepts an event object, validates it using the defined Zod schemas, and returns the validated object or throws an error if validation fails.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a function that takes an event object as input, parses it using the Zod schemas, and handles validation errors appropriately, either by returning the validated object or throwing a detailed error.",
+          "status": "done",
+          "testStrategy": "Test the function with various valid and invalid event objects to ensure it correctly validates data and handles errors as expected."
+        },
+        {
+          "id": 3,
+          "title": "Integrate Validation Logic with Context7 MCP Annotations",
+          "description": "Incorporate the validation function into the domain or application layer, utilizing Context7 MCP annotations to manage validation logic effectively.",
+          "dependencies": [
+            2
+          ],
+          "details": "Place the validation function within the appropriate layer of the application architecture and use Context7 MCP annotations to annotate the validation logic, facilitating better management and understanding of the validation process.",
+          "status": "done",
+          "testStrategy": "Ensure that the validation logic is correctly integrated and annotated, and that it functions as intended within the application context."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Database Setup for Optional Audit Log",
+      "description": "Set up the connection to the optional audit PostgreSQL database if AUDIT_DB_URL is provided. Implement a basic repository or data access object for the `flujo_ejecutado` table to allow saving and updating flow states.",
+      "details": "Install a PostgreSQL client library (e.g., pg). Implement a database connection utility that connects if AUDIT_DB_URL is present. Create a repository class (e.g., FlujoEjecutadoRepository in infrastructure/database/) with methods for saving a new flow record (state 'recibido') and updating its state and error details. Use Context7 MCP annotations for database connection and repository methods.",
+      "testStrategy": "Write integration tests to verify database connection and basic save/update operations on a mock or test database instance. Ensure logic handles the case where AUDIT_DB_URL is not provided (no database interaction).",
+      "priority": "medium",
+      "dependencies": [
+        2,
+        4
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Instalar y configurar la biblioteca cliente de PostgreSQL",
+          "description": "Instalar la biblioteca cliente de PostgreSQL para Node.js y configurar la conexión a la base de datos utilizando la URL proporcionada en AUDIT_DB_URL.",
+          "dependencies": [],
+          "details": "Instalar la biblioteca cliente de PostgreSQL para Node.js utilizando npm:\n\n```bash\nnpm install pg\n```\n\nConfigurar la conexión a la base de datos utilizando la URL proporcionada en AUDIT_DB_URL. Para obtener más detalles sobre cómo conectar PostgreSQL con Node.js, consulte la documentación de Tembo Docs. ([tembo.io](https://tembo.io/docs/getting-started/postgres_guides/connecting-to-postgres-with-nodejs?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Verificar que la conexión a la base de datos se establezca correctamente y que no se generen errores de conexión."
+        },
+        {
+          "id": 2,
+          "title": "Implementar la clase de repositorio FlujoEjecutadoRepository",
+          "description": "Crear una clase de repositorio FlujoEjecutadoRepository en el directorio infrastructure/database/ con métodos para guardar un nuevo registro de flujo y actualizar su estado y detalles de error.",
+          "dependencies": [
+            1
+          ],
+          "details": "Crear la clase FlujoEjecutadoRepository en el directorio infrastructure/database/ con métodos para guardar un nuevo registro de flujo con estado 'recibido' y actualizar su estado y detalles de error. Para obtener más detalles sobre cómo implementar repositorios en Node.js, consulte la documentación de CodeGenitor. ([codegenitor.com](https://www.codegenitor.com/blogs/f3be58f8-1a1a-4e9a-bd7c-c9f87e19f9f9?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Escribir pruebas unitarias para verificar que los métodos de la clase FlujoEjecutadoRepository funcionen correctamente, incluyendo la inserción y actualización de registros en la base de datos."
+        },
+        {
+          "id": 3,
+          "title": "Aplicar anotaciones Context7 MCP en la clase de repositorio",
+          "description": "Aplicar las anotaciones Context7 MCP en la clase FlujoEjecutadoRepository para gestionar la conexión a la base de datos y los métodos del repositorio.",
+          "dependencies": [
+            2
+          ],
+          "details": "Aplicar las anotaciones Context7 MCP en la clase FlujoEjecutadoRepository para gestionar la conexión a la base de datos y los métodos del repositorio. Para obtener más detalles sobre cómo utilizar Context7 MCP en Node.js, consulte la documentación de CodeGenitor. ([codegenitor.com](https://www.codegenitor.com/blogs/f3be58f8-1a1a-4e9a-bd7c-c9f87e19f9f9?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Verificar que las anotaciones Context7 MCP se apliquen correctamente y que la gestión de la conexión a la base de datos y los métodos del repositorio funcionen según lo esperado."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Kafka Consumer Setup",
+      "description": "Implement the Kafka consumer setup using kafkaJS. This includes connecting to the broker URL, subscribing to configured topics, and setting up the message processing loop.",
+      "details": "Install kafkaJS. Create a Kafka consumer instance configured with the BROKER_URL. Implement connection and disconnection logic. Set up subscription to topics (initially, this might be a placeholder topic or configured via env var). Implement the `eachMessage` handler skeleton. Place this in infrastructure/messaging/. Use Context7 MCP annotations for Kafka connection and message handling entry point.",
+      "testStrategy": "Write integration tests to verify successful connection to a Kafka broker (mock or real test instance) and subscription to topics. Verify that the `eachMessage` handler is invoked upon receiving messages.",
+      "priority": "high",
+      "dependencies": [
+        2
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Install and Configure KafkaJS",
+          "description": "Set up KafkaJS in the project by installing it via npm and configuring the Kafka client with the appropriate broker URL and client ID.",
+          "dependencies": [],
+          "details": "Install KafkaJS using npm: `npm install kafkajs`. Configure the Kafka client with the broker URL and client ID as per the project's requirements. ([kafka.js.org](https://kafka.js.org/docs/next/consumer-example?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Verify the Kafka client connection by logging a success message upon successful connection."
+        },
+        {
+          "id": 2,
+          "title": "Implement Kafka Consumer Instance",
+          "description": "Create a Kafka consumer instance with a specified group ID and set up connection and disconnection logic to handle consumer lifecycle events.",
+          "dependencies": [
+            1
+          ],
+          "details": "Initialize the consumer with a unique group ID. Implement connection logic to connect to the Kafka broker and disconnection logic to gracefully handle consumer shutdowns. ([kafka.js.org](https://kafka.js.org/docs/next/consumer-example?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Test the consumer's ability to connect and disconnect by observing the console logs for connection and disconnection events."
+        },
+        {
+          "id": 3,
+          "title": "Subscribe to Topics and Implement Message Processing",
+          "description": "Subscribe the consumer to the desired Kafka topics and implement the `eachMessage` handler to process incoming messages, including logging message details and handling errors appropriately.",
+          "dependencies": [
+            2
+          ],
+          "details": "Use the `eachMessage` handler to process messages, logging details such as topic, partition, offset, and message value. Implement error handling to manage exceptions during message processing. ([kafka.js.org](https://kafka.js.org/docs/next/consumer-example?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Simulate message production to the subscribed topics and verify that the consumer processes and logs messages correctly, handling any errors as expected."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Dynamic Handler Registration Mechanism",
+      "description": "Create a mechanism for dynamically registering and retrieving handlers for different event types (`tipo_evento`). This could be a simple map or dictionary.",
+      "details": "Create a registry class or module (e.g., src/application/handlerRegistry.ts). This registry should provide methods to `registerHandler(eventType, handlerFunction)` and `getHandler(eventType)`. Handlers should conform to a defined interface (e.g., `(event: Event) => Promise<void>`). Use Context7 MCP annotations for the registry methods.",
+      "testStrategy": "Write unit tests for the registry to verify that handlers can be registered and retrieved correctly by event type, and that retrieving a non-existent handler returns undefined or null.",
+      "priority": "high",
+      "dependencies": [
+        4
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Design Handler Registry Interface",
+          "description": "Define the interface for the handler registry, specifying methods for registering and retrieving handlers, and ensuring handlers conform to a defined interface.",
+          "dependencies": [],
+          "details": "Create a TypeScript interface for the handler registry with methods `registerHandler(eventType: string, handlerFunction: (event: Event) => Promise<void>)` and `getHandler(eventType: string): (event: Event) => Promise<void>`. Ensure that handler functions adhere to the specified signature to maintain consistency and reliability in event handling.",
+          "status": "done",
+          "testStrategy": "Implement unit tests to verify that the registry correctly registers and retrieves handlers, and that handlers execute as expected when invoked."
+        },
+        {
+          "id": 2,
+          "title": "Implement Handler Registry Class",
+          "description": "Develop a class that implements the handler registry interface, managing the storage and retrieval of handlers for different event types.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a TypeScript class that implements the handler registry interface defined in the previous subtask. Utilize a data structure, such as a Map, to store handlers keyed by their event types. Implement the `registerHandler` and `getHandler` methods to manage the addition and retrieval of handlers, respectively.",
+          "status": "done",
+          "testStrategy": "Write unit tests to ensure that the class correctly manages the registration and retrieval of handlers, and that it handles edge cases, such as attempting to retrieve a handler for an unregistered event type."
+        },
+        {
+          "id": 3,
+          "title": "Integrate Context7 MCP Annotations",
+          "description": "Incorporate Context7 MCP annotations into the handler registry methods to enhance documentation and maintainability.",
+          "dependencies": [
+            2
+          ],
+          "details": "Utilize Context7 MCP annotations to document the `registerHandler` and `getHandler` methods within the handler registry class. This integration will provide up-to-date, version-specific documentation and code examples, improving the clarity and maintainability of the codebase. Refer to the Context7 MCP documentation for guidance on proper annotation usage.",
+          "status": "done",
+          "testStrategy": "Conduct code reviews to ensure that the annotations are correctly applied and that they enhance the understanding and maintainability of the codebase."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Flow State Management Logic",
+      "description": "Implement the logic for managing the state transitions of a `flujo_ejecutado` record (`recibido` -> `en_proceso` -> `procesado` / `fallido`). This logic will be used by the orchestrator.",
+      "details": "Create a service or utility class (e.g., src/application/flowStateManager.ts). This class should have methods like `startProcessing(flowId)`, `completeProcessing(flowId)`, `failProcessing(flowId, errorDetails)`. These methods should update the state in the `flujo_ejecutado` record, potentially interacting with the database repository (Task 6). Use Context7 MCP annotations for state transition methods.",
+      "testStrategy": "Write unit tests for the state manager methods, ensuring correct state transitions and interaction with the database repository (mock the repository if needed). Test handling of errors during state updates.",
+      "priority": "high",
+      "dependencies": [
+        4,
+        6
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Diseñar la clase FlowStateManager",
+          "description": "Crear una clase en TypeScript ubicada en src/application/flowStateManager.ts que gestione las transiciones de estado de los registros 'flujo_ejecutado'.",
+          "dependencies": [],
+          "details": "La clase debe incluir métodos como 'startProcessing(flowId)', 'completeProcessing(flowId)' y 'failProcessing(flowId, errorDetails)', que actualicen el estado del registro correspondiente en la base de datos.",
+          "status": "done",
+          "testStrategy": "Implementar pruebas unitarias para cada método, verificando que las transiciones de estado se realicen correctamente y que los cambios se reflejen en la base de datos."
+        },
+        {
+          "id": 2,
+          "title": "Integrar la clase FlowStateManager con el repositorio de la base de datos",
+          "description": "Conectar la clase FlowStateManager con el repositorio de la base de datos para realizar las actualizaciones de estado en los registros 'flujo_ejecutado'.",
+          "dependencies": [
+            1
+          ],
+          "details": "Utilizar el repositorio de la base de datos para implementar las operaciones de actualización de estado en los métodos de la clase FlowStateManager, asegurando la consistencia de los datos.",
+          "status": "done",
+          "testStrategy": "Realizar pruebas de integración para verificar que las actualizaciones de estado se reflejen correctamente en la base de datos y que no se produzcan inconsistencias."
+        },
+        {
+          "id": 3,
+          "title": "Aplicar anotaciones MCP de Context7 en los métodos de transición de estado",
+          "description": "Utilizar las anotaciones MCP de Context7 para documentar y gestionar las transiciones de estado en los métodos de la clase FlowStateManager.",
+          "dependencies": [
+            1
+          ],
+          "details": "Aplicar las anotaciones MCP de Context7 en los métodos 'startProcessing', 'completeProcessing' y 'failProcessing' para facilitar la comprensión y mantenimiento del código, y para integrarse con herramientas que soporten el protocolo MCP.",
+          "status": "done",
+          "testStrategy": "Verificar que las anotaciones MCP se apliquen correctamente y que las herramientas que utilizan el protocolo MCP reconozcan y procesen las transiciones de estado según lo esperado."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "External Service Integration Stubs",
+      "description": "Create interfaces and basic stub implementations for interacting with external services like `image-processing-service` and `file-storage-service`. These stubs should represent the communication layer (HTTP/gRPC/messaging) without full business logic.",
+      "details": "Define interfaces for external service clients in the domain layer (e.g., `IImageProcessingService`, `IFileStorageService`). Create basic stub classes in infrastructure/services/ that implement these interfaces. These stubs can initially just log calls or return dummy data. Use Context7 MCP annotations for external service client interfaces and stub methods.",
+      "testStrategy": "Write unit tests for the stub classes to ensure methods exist and can be called. Verify logging or dummy return values if implemented.",
+      "priority": "medium",
+      "dependencies": [
+        1
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Define External Service Client Interfaces",
+          "description": "Create interfaces for external service clients in the domain layer, such as `IImageProcessingService` and `IFileStorageService`, to represent the communication layer without full business logic.",
+          "dependencies": [],
+          "details": "In the domain layer, define interfaces like `IImageProcessingService` and `IFileStorageService` to represent the communication layer for interacting with external services. These interfaces should include method signatures that correspond to the operations provided by the external services, without implementing the full business logic. This approach ensures a clear separation of concerns and facilitates easier testing and maintenance. ([modelcontextprotocol.io](https://modelcontextprotocol.io/docs/concepts/tools?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Unit tests should be written to verify that the interfaces are correctly defined and that they accurately represent the expected communication methods for the external services."
+        },
+        {
+          "id": 2,
+          "title": "Implement Service Stubs with Context7 MCP Annotations",
+          "description": "Create basic stub classes in the `infrastructure/services/` directory that implement the defined interfaces, using Context7 MCP annotations to facilitate integration with external services.",
+          "dependencies": [
+            1
+          ],
+          "details": "In the `infrastructure/services/` directory, implement stub classes that adhere to the interfaces defined in the domain layer. These stub classes should utilize Context7 MCP annotations to facilitate integration with external services. The initial implementation can include logging of method calls or returning dummy data to simulate interactions with the external services. This approach allows for testing and development without the need for actual external service dependencies. ([github.com](https://github.com/mcpconcierge/context7-mcp-server?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Integration tests should be conducted to ensure that the stub classes correctly implement the interfaces and that the MCP annotations are properly configured to enable communication with external services."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Retry Mechanism Implementation",
+      "description": "Implement a RetryManager or similar mechanism to handle transient failures when calling external services or executing specific parts of a handler.",
+      "details": "Implement a utility or class (e.g., src/infrastructure/utils/retryManager.ts) that can wrap asynchronous operations and retry them a specified number of times with optional delays. Consider using a library like `async-retry`. This manager should be usable by handlers or the orchestrator when calling external services (Task 10). Use Context7 MCP annotations for the retry logic.",
+      "testStrategy": "Write unit tests for the RetryManager to verify that operations are retried correctly on failure and that it eventually fails after the maximum number of retries.",
+      "priority": "medium",
+      "dependencies": [
+        10
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Research and Select a Retry Library",
+          "description": "Investigate and choose an appropriate TypeScript library for implementing retry logic, such as 'async-retry' or 'retryyy'.",
+          "dependencies": [],
+          "details": "Evaluate libraries like 'async-retry' ([npmjs.com](https://www.npmjs.com/package/async-retry?utm_source=openai)) and 'retryyy' ([github.com](https://github.com/stefanmaric/retryyy?utm_source=openai)) to determine which best fits the project's requirements for handling transient failures in asynchronous operations.",
+          "status": "done"
+        },
+        {
+          "id": 2,
+          "title": "Implement RetryManager Utility",
+          "description": "Develop a 'RetryManager' utility that wraps asynchronous operations and retries them a specified number of times with optional delays, utilizing the selected library.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a utility or class (e.g., 'src/infrastructure/utils/retryManager.ts') that leverages the chosen library to handle retries for asynchronous operations, allowing for configurable retry counts and delays between attempts.",
+          "status": "done"
+        },
+        {
+          "id": 3,
+          "title": "Integrate RetryManager with Handlers and Orchestrator",
+          "description": "Integrate the 'RetryManager' into existing handlers and the orchestrator to manage retries when calling external services, and apply Context7 MCP annotations for the retry logic.",
+          "dependencies": [
+            2
+          ],
+          "details": "Modify existing handlers and the orchestrator to utilize the 'RetryManager' for retrying operations that interact with external services, ensuring that the retry logic is properly annotated with Context7 MCP annotations to maintain context and traceability.",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Orchestration Error Handling",
+      "description": "Implement a centralized error handling mechanism within the orchestration flow. This includes capturing errors during handler execution, logging the error details, and marking the corresponding `flujo_ejecutado` record as `fallido`.",
+      "details": "Modify the orchestration logic (to be implemented in Task 13) to include try-catch blocks around handler execution. In case of an error, log the error using the configured logger (Task 3) and use the Flow State Manager (Task 9) to update the flow state to `fallido`, including the error details. Use Context7 MCP annotations for error handling points.",
+      "testStrategy": "Write unit tests that simulate handler errors and verify that the error is logged correctly and the flow state is updated to `fallido` with error details using the mock Flow State Manager and Logger.",
+      "priority": "high",
+      "dependencies": [
+        3,
+        9
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Try-Catch Blocks Around Handler Execution",
+          "description": "Modify the orchestration logic to include try-catch blocks around each handler execution to capture potential errors during their execution.",
+          "dependencies": [],
+          "details": "Incorporate try-catch blocks around each handler execution within the orchestration flow to capture and handle any exceptions that may occur during their execution. This ensures that errors are caught and can be managed appropriately, preventing the orchestration from failing unexpectedly. For more information on implementing try-catch blocks in Java, refer to the Java Tutorials on Exceptions. ([docs.oracle.com](https://docs.oracle.com/javase/tutorial/essential/exceptions/catch.html?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Unit tests should be created to simulate various exceptions during handler execution and verify that the try-catch blocks correctly handle these exceptions without causing the orchestration to fail unexpectedly."
+        },
+        {
+          "id": 2,
+          "title": "Log Error Details Using Configured Logger",
+          "description": "Configure the orchestration to log error details using the existing logger whenever an exception is caught during handler execution.",
+          "dependencies": [
+            1
+          ],
+          "details": "Ensure that the orchestration is configured to log detailed information about any exceptions caught during handler execution. This includes the exception message, stack trace, and any relevant context information. Utilizing the existing logger (as configured in Task 3) will maintain consistency in logging practices across the application. For guidance on logging exceptions in Java, refer to the Java Tutorials on Exceptions. ([docs.oracle.com](https://docs.oracle.com/javase/tutorial/essential/exceptions/catch.html?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Integration tests should be conducted to verify that exceptions are logged correctly, including checking the log files or logging system to ensure that the error details are recorded as expected."
+        },
+        {
+          "id": 3,
+          "title": "Update Flow State to 'fallido' Using Flow State Manager",
+          "description": "Modify the orchestration to update the flow state to 'fallido' using the Flow State Manager whenever an exception is caught during handler execution.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "After catching an exception and logging the error details, utilize the Flow State Manager (as implemented in Task 9) to update the corresponding `flujo_ejecutado` record's state to 'fallido'. This ensures that the orchestration accurately reflects the failure state and can trigger appropriate failure handling mechanisms. For more information on managing flow states, refer to the Flow State Manager documentation. ([docs.oracle.com](https://docs.oracle.com/javase/tutorial/essential/exceptions/catch.html?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "End-to-end tests should be performed to ensure that when an exception occurs during handler execution, the flow state is correctly updated to 'fallido' and that the system behaves as expected in this failure state."
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Implement FlujoOrchestrator",
+      "description": "Implement the core `FlujoOrchestrator` logic. This component receives a validated event, identifies its type, retrieves the corresponding handler from the registry, executes the handler, manages the flow state transitions, and incorporates error handling and retry logic.",
+      "details": "Create the `FlujoOrchestrator` class (e.g., src/application/flujoOrchestrator.ts). This class will depend on the Event Validator (Task 5), Handler Registry (Task 8), Flow State Manager (Task 9), External Service Clients (Task 10), Retry Manager (Task 11), and Error Handling logic (Task 12). Its main method will take an event, validate it, get the handler, execute it within a try-catch block (Task 12), using the Retry Manager (Task 11) for external calls, and update the flow state (Task 9). Use Context7 MCP annotations for the orchestrator class and its main processing method.",
+      "testStrategy": "Write unit tests for the Orchestrator, mocking its dependencies. Test scenarios including successful handler execution, handler throwing errors (handled by Task 12), handler making external calls (using Task 10 stubs and Task 11 retry), and verifying correct state transitions via the mock State Manager.",
+      "priority": "high",
+      "dependencies": [
+        5,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "status": "in-progress",
+      "subtasks": []
+    },
+    {
+      "id": 14,
+      "title": "Integrate Kafka Consumer with Orchestrator",
+      "description": "Connect the implemented Kafka consumer (Task 7) to the FlujoOrchestrator (Task 13). The consumer's `eachMessage` handler will parse the incoming Kafka message, potentially perform initial deserialization, and pass the event payload to the Orchestrator for processing.",
+      "details": "Modify the `eachMessage` handler in the Kafka consumer setup (Task 7). Inside this handler, extract the event data from the Kafka message, deserialize it if necessary, create an Event object, and call the main processing method of the FlujoOrchestrator (Task 13). Ensure initial flow state ('recibido') is recorded before calling the orchestrator if using the audit DB (Task 6/9). Use Context7 MCP annotations for the integration point in the Kafka handler.",
+      "testStrategy": "Write integration tests simulating receiving messages from a Kafka topic (using a mock Kafka producer or test instance). Verify that the message is correctly received by the consumer and passed to the Orchestrator. Check logs or mock database interactions to confirm the flow starts processing.",
+      "priority": "high",
+      "dependencies": [
+        7,
+        13
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 15,
+      "title": "Implement Health Check Endpoint",
+      "description": "Implement a simple HTTP health check endpoint (`/health`) that returns a 200 OK response when the service is running. This is required for readiness probes in containerized environments.",
+      "details": "Use a lightweight HTTP server library (e.g., http module in Node.js or Express if preferred, though simple http is sufficient). Create an endpoint at `/health` that listens on a configurable port (or a default). This endpoint should simply respond with status 200 and potentially a small body like `{ status: 'ok' }`. Place this in interfaces/http/. Use Context7 MCP annotations for the health check endpoint definition.",
+      "testStrategy": "Use a tool like curl or a simple script to send an HTTP GET request to the /health endpoint and verify that it returns a 200 OK status code.",
+      "priority": "medium",
+      "dependencies": [
+        1
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Health Check Endpoint",
+          "description": "Create a simple HTTP server using Node.js's built-in 'http' module that listens on a configurable port and responds with a 200 OK status and a JSON body containing { status: 'ok' } when the '/health' endpoint is accessed.",
+          "dependencies": [],
+          "details": "Utilize Node.js's 'http' module to set up a server that listens on a specified port. Define a route for the '/health' endpoint that responds with a 200 OK status and a JSON object { status: 'ok' } to indicate the service is running. This setup is essential for readiness probes in containerized environments. For more information on creating HTTP servers in Node.js, refer to DigitalOcean's tutorial on creating a web server with the HTTP module. ([digitalocean.com](https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Test the '/health' endpoint by sending a GET request and verifying that the response status is 200 and the body contains { status: 'ok' }."
+        },
+        {
+          "id": 2,
+          "title": "Define Health Check Endpoint Using Context7 MCP Annotations",
+          "description": "Use Context7 MCP annotations to define the '/health' endpoint, ensuring it is recognized and properly handled within the system's context.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implement Context7 MCP annotations to define the '/health' endpoint, ensuring it is recognized and properly handled within the system's context. This step is crucial for integrating the health check endpoint into the broader system architecture. Specific implementation details for Context7 MCP annotations can be found in the Context7 MCP documentation. ([en.wikipedia.org](https://en.wikipedia.org/wiki/Express.js?utm_source=openai))",
+          "status": "done",
+          "testStrategy": "Verify that the '/health' endpoint is correctly defined and recognized within the system by checking the system's response to a GET request to '/health'."
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Dockerization",
+      "description": "Create a Dockerfile to containerize the flow-logic-service application, including dependencies and build artifacts. Configure it to run the service entry point.",
+      "details": "Create a Dockerfile in the project root. Use a suitable base image (e.g., Node.js). Copy package.json and install dependencies. Copy source code, build the application (TypeScript compilation). Define the entry point command (`node dist/main.js` or similar). Expose the port used by the health check endpoint (Task 15). Consider multi-stage builds for smaller image size. Use Context7 MCP annotations for the Dockerfile definition.",
+      "testStrategy": "Build the Docker image (`docker build .`). Run the container (`docker run`). Verify that the service starts without errors and that the health check endpoint (Task 15) is accessible from outside the container.",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        15
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 17,
+      "title": "Ensure Context7 MCP Annotations Compliance",
+      "description": "Review all implemented code to ensure that Context7 MCP annotations are correctly applied according to the specified conventions. This is crucial for maintaining synchronization between specifications and code.",
+      "details": "Manually review the codebase or use a linter/script if available to check for the presence and correct format of Context7 MCP annotations in relevant code sections (config loading, logging, domain models, validation, database interactions, messaging, handler registry, state management, external service clients, retry logic, error handling, orchestrator, entry point, Dockerfile). Add missing annotations and correct formatting errors.",
+      "testStrategy": "Perform a code review specifically focused on the presence and correctness of Context7 MCP annotations. If automated tooling exists, run it and fix reported issues.",
+      "priority": "medium",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "status": "pending",
+      "subtasks": []
+    }
+  ]
+}

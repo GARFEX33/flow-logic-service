@@ -1,0 +1,37 @@
+# Task ID: 6
+# Title: Database Setup for Optional Audit Log
+# Status: done
+# Dependencies: 2, 4
+# Priority: medium
+# Description: Set up the connection to the optional audit PostgreSQL database if AUDIT_DB_URL is provided. Implement a basic repository or data access object for the `flujo_ejecutado` table to allow saving and updating flow states.
+# Details:
+Install a PostgreSQL client library (e.g., pg). Implement a database connection utility that connects if AUDIT_DB_URL is present. Create a repository class (e.g., FlujoEjecutadoRepository in infrastructure/database/) with methods for saving a new flow record (state 'recibido') and updating its state and error details. Use Context7 MCP annotations for database connection and repository methods.
+
+# Test Strategy:
+Write integration tests to verify database connection and basic save/update operations on a mock or test database instance. Ensure logic handles the case where AUDIT_DB_URL is not provided (no database interaction).
+
+# Subtasks:
+## 1. Instalar y configurar la biblioteca cliente de PostgreSQL [done]
+### Dependencies: None
+### Description: Instalar la biblioteca cliente de PostgreSQL para Node.js y configurar la conexión a la base de datos utilizando la URL proporcionada en AUDIT_DB_URL.
+### Details:
+Instalar la biblioteca cliente de PostgreSQL para Node.js utilizando npm:
+
+```bash
+npm install pg
+```
+
+Configurar la conexión a la base de datos utilizando la URL proporcionada en AUDIT_DB_URL. Para obtener más detalles sobre cómo conectar PostgreSQL con Node.js, consulte la documentación de Tembo Docs. ([tembo.io](https://tembo.io/docs/getting-started/postgres_guides/connecting-to-postgres-with-nodejs?utm_source=openai))
+
+## 2. Implementar la clase de repositorio FlujoEjecutadoRepository [done]
+### Dependencies: 6.1
+### Description: Crear una clase de repositorio FlujoEjecutadoRepository en el directorio infrastructure/database/ con métodos para guardar un nuevo registro de flujo y actualizar su estado y detalles de error.
+### Details:
+Crear la clase FlujoEjecutadoRepository en el directorio infrastructure/database/ con métodos para guardar un nuevo registro de flujo con estado 'recibido' y actualizar su estado y detalles de error. Para obtener más detalles sobre cómo implementar repositorios en Node.js, consulte la documentación de CodeGenitor. ([codegenitor.com](https://www.codegenitor.com/blogs/f3be58f8-1a1a-4e9a-bd7c-c9f87e19f9f9?utm_source=openai))
+
+## 3. Aplicar anotaciones Context7 MCP en la clase de repositorio [done]
+### Dependencies: 6.2
+### Description: Aplicar las anotaciones Context7 MCP en la clase FlujoEjecutadoRepository para gestionar la conexión a la base de datos y los métodos del repositorio.
+### Details:
+Aplicar las anotaciones Context7 MCP en la clase FlujoEjecutadoRepository para gestionar la conexión a la base de datos y los métodos del repositorio. Para obtener más detalles sobre cómo utilizar Context7 MCP en Node.js, consulte la documentación de CodeGenitor. ([codegenitor.com](https://www.codegenitor.com/blogs/f3be58f8-1a1a-4e9a-bd7c-c9f87e19f9f9?utm_source=openai))
+

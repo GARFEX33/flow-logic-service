@@ -1,0 +1,37 @@
+{
+  "name": "flow-logic-service",
+  "version": "1.0.0",
+  "description": "Microservicio backend que actúa como orquestador lógico de eventos",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "test": "echo \"Test script not implemented\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "async-retry": "^1.3.3",
+    "dotenv": "^10.0.0",
+    "kafkajs": "^2.2.4",
+    "pg": "^8.16.0",
+    "pino": "^9.7.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.25.28"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GARFEX33/flow-logic-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GARFEX33/flow-logic-service/issues"
+  },
+  "homepage": "https://github.com/GARFEX33/flow-logic-service#readme"
+}

@@ -1,0 +1,11 @@
+# Task ID: 14
+# Title: Integrate Kafka Consumer with Orchestrator
+# Status: done
+# Dependencies: 7, 13
+# Priority: high
+# Description: Connect the implemented Kafka consumer (Task 7) to the FlujoOrchestrator (Task 13). The consumer's `eachMessage` handler will parse the incoming Kafka message, potentially perform initial deserialization, and pass the event payload to the Orchestrator for processing.
+# Details:
+Modify the `eachMessage` handler in the Kafka consumer setup (Task 7). Inside this handler, extract the event data from the Kafka message, deserialize it if necessary, create an Event object, and call the main processing method of the FlujoOrchestrator (Task 13). Ensure initial flow state ('recibido') is recorded before calling the orchestrator if using the audit DB (Task 6/9). Use Context7 MCP annotations for the integration point in the Kafka handler.
+
+# Test Strategy:
+Write integration tests simulating receiving messages from a Kafka topic (using a mock Kafka producer or test instance). Verify that the message is correctly received by the consumer and passed to the Orchestrator. Check logs or mock database interactions to confirm the flow starts processing.
