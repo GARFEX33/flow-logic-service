@@ -20,6 +20,7 @@ node_modules/
 *.njsproj
 *.sln
 *.sw?
+.pytest_cache/
 # OS specific
 .DS_Store
 # Task files

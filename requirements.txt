@@ -3,3 +3,5 @@ aiokafka
 pydantic
 dependency-injector
 structlog
+httpx
+asyncpg
