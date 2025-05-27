@@ -1,0 +1,5 @@
+fastapi
+aiokafka
+pydantic
+dependency-injector
+structlog
