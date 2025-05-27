@@ -8,5 +8,4 @@ node_modules/
 .taskmasterconfig
 .windsurfrules
 scripts/
-
-
+tasks/
